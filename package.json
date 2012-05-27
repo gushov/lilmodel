@@ -1,0 +1,35 @@
+{
+  "name": "lilmodel",
+  "description": "The best project ever.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/ahovland-nokia/model",
+  "author": {
+    "name": "August Hovland",
+    "email": "august.hovland@nokia.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ahovland-nokia/model.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ahovland-nokia/model/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/ahovland-nokia/model/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/lilmodel",
+  "engines": {
+    "node": "~0.6.7"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.3.9"
+  },
+  "keywords": []
+}
