@@ -1,4 +1,4 @@
-# model
+# lilmodel
 
 The best project ever.
 
@@ -23,5 +23,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2012 August Hovland  
+Copyright (c) 2012 August Hovland
 Licensed under the MIT license.
