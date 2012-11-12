@@ -1,35 +1,33 @@
 {
+  "author": "August Hovland <gushov@gmail.com>",
   "name": "lilmodel",
-  "description": "The best project ever.",
-  "version": "0.1.0",
-  "homepage": "https://github.com/ahovland-nokia/model",
-  "author": {
-    "name": "August Hovland",
-    "email": "august.hovland@nokia.com"
-  },
+  "description": "A li'l model wrapper",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ahovland-nokia/model.git"
+    "url": "git://github.com/gushov/lilmodel.git"
   },
-  "bugs": {
-    "url": "https://github.com/ahovland-nokia/model/issues"
+  "engines": {
+    "node": "~0.6.18"
+  },
+  "dependencies": {
+    "lilprovider": ">= 0.0.x"
+  },
+  "devDependencies": {
+    "grunt": ">= 0.3.x",
+    "buster": ">= 0.6.x",
+    "grunt-buster": ">= 0.1.x"
+  },
+  "optionalDependencies": {
+    "lilprovider": ">= 0.0.x"
   },
   "licenses": [
     {
-      "type": "MIT",
-      "url": "https://github.com/ahovland-nokia/model/blob/master/LICENSE-MIT"
+      "type": "MIT"
     }
   ],
-  "main": "lib/lilmodel",
-  "engines": {
-    "node": "~0.6.7"
-  },
+  "main": "dist/lilmodel.js",
   "scripts": {
-    "test": "grunt test"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "grunt": "~0.3.9"
-  },
-  "keywords": []
+    "test": "grunt buster"
+  }
 }
