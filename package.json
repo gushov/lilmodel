@@ -26,7 +26,7 @@
       "type": "MIT"
     }
   ],
-  "main": "dist/lilmodel.js",
+  "main": "lib/lilmodel.js",
   "scripts": {
     "test": "grunt buster"
   }
