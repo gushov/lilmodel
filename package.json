@@ -11,12 +11,15 @@
     "node": "~0.6.18"
   },
   "dependencies": {
-    "lilprovider": ">= 0.0.x"
+    "lil_": ">= 0.0.x",
+    "lilobj": ">= 0.0.x",
+    "vladiator": ">= 0.0.x"
   },
   "devDependencies": {
     "grunt": ">= 0.3.x",
     "buster": ">= 0.6.x",
-    "grunt-buster": ">= 0.1.x"
+    "grunt-buster": ">= 0.1.x",
+    "grunt-mdlldr": ">= 0.1.x"
   },
   "optionalDependencies": {
     "lilprovider": ">= 0.0.x"
