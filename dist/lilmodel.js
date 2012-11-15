@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.0 - 2012-11-12
+/*! lilmodel - v0.0.0 - 2012-11-15
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -316,7 +316,7 @@ module.exports = validate;
 
 }, true);
 
-provide('collection', function (require, module, exports) {
+provide('lilmodel/collection', function (require, module, exports) {
 
 /*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
@@ -363,8 +363,9 @@ module.exports = LilObj.extend({
 
 });
 
+
 }, true);
-provide('model', function (require, module, exports) {
+provide('lilmodel/model', function (require, module, exports) {
 
 /*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
@@ -474,7 +475,7 @@ module.exports = LilObj.extend({
 
 
 }, true);
-provide('syncr', function (require, module, exports) {
+provide('lilmodel/syncr', function (require, module, exports) {
 
 /*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
@@ -499,14 +500,15 @@ provide('lilmodel', function (require, module, exports) {
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
   strict:false, eqnull:true, browser:true, node:true */
 
-var syncr = require('./syncr');
-var model = require('./model');
-var collection = require('./collection');
+var syncr = require('./lilmodel/syncr');
+var model = require('./lilmodel/model');
+var collection = require('./lilmodel/collection');
 
 module.exports = {
   syncr: syncr,
   model: model,
   collection: collection
 };
+
 
 }, true);

@@ -21,11 +21,7 @@
   "optionalDependencies": {
     "lilprovider": ">= 0.0.x"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "licenses": [{ "type": "MIT" }],
   "main": "lib/lilmodel.js",
   "scripts": {
     "test": "grunt buster"
