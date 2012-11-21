@@ -2,20 +2,97 @@
 
 A li'l backbone-ish model object.
 
-## Getting Started
-Install the module with: `npm install lilmodel`
+## Browser usage
+
+load dist/lilobj.js or dist/lilobj.min.js in you browser and call it like this:
 
 ```javascript
-var model = require('lilmodel');
+(function () {
+
+  var model = require('lilmodel').model;
+
+  var beer = model.extend({
+
+    defaults: {
+      sizeInLiters: 0.5,
+    },
+
+    rules: {
+      type: ['required', 'string']
+      sizeInLiters: ['required', 'number', ['gte', 0.2]]
+    }
+
+  });
+
+  var dunkel = beer.create({
+    type: 'lager',
+  });
+
+  dunkel.save(function (err) {
+    //callback from sync 
+  });
+
+}());
 ```
+
+## Node usage
+
+install the module with: `npm install lilmodel`
+
+```javascript
+var beer = model.extend({
+
+  defaults: {
+    sizeInLiters: 0.5,
+  },
+
+  rules: {
+    type: ['required', 'string']
+    sizeInLiters: ['required', 'number', ['gte', 0.2]]
+  }
+
+});
+
+var dunkel = beer.create({
+  type: 'lager',
+});
+
+dunkel.save(function (err) {
+  //callback from sync 
+});
+```
+
 ## Documentation
-_(Coming soon)_
 
-## Examples
-_(Coming soon)_
+### syncr(sync)
 
-## Release History
-_(Nothing yet)_
+__sync(method, obj, callback)__
+
+__methods__
+
+* 'create'
+* 'update'
+* 'fetch'
+* 'destroy'
+* 'find'
+
+### model.extend(config)
+
+__config__
+
+* defaults
+* rules
+* children
+
+### model.create(properties)
+
+### _modelInstance_.validate()
+
+### _modelInstance_.save(callback)
+
+### _modelInstance_.fetch(callback)
+
+### _modelInstance_.destroy(callback)
 
 ## License
 Copyright (c) 2012 August Hovland
