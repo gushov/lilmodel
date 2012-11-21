@@ -64,35 +64,27 @@ dunkel.save(function (err) {
 
 ## Documentation
 
-### syncr(sync)
-
-__sync(method, obj, callback)__
-
-__methods__
-
-* 'create'
-* 'update'
-* 'fetch'
-* 'destroy'
-* 'find'
+### syncr(syncMethod)
 
 ### model.extend(config)
 
-__config__
-
-* defaults
-* rules
-* children
-
 ### model.create(properties)
 
-### _modelInstance_.validate()
+### _model_.validate()
 
-### _modelInstance_.save(callback)
+### _model_.save(callback)
 
-### _modelInstance_.fetch(callback)
+### _model_.fetch(callback)
 
-### _modelInstance_.destroy(callback)
+### _model_.destroy(callback)
+
+### collection.extend(config)
+
+### collection.create(propertiesList)
+
+### _collection_.validate()
+
+### _collection_.find(callback)
 
 ## License
 Copyright (c) 2012 August Hovland
