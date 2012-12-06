@@ -65,53 +65,21 @@ buster.testCase("lilmodel", {
       ]
     });
 
+    chef.recipes.add({ name: 'eggs' });
+    var results = chef.recipes.get({ name: 'tacos' });
+    chef.recipes.remove({ name: 'meatball sauce' });
+
     chef.save(nextSpy);
     assert.calledOnce(this.syncStub);
     assert.calledOnce(nextSpy);
     assert.equals(chef.name, 'gus');
     assert.equals(chef.sousChef.name, 'zoe');
     assert.equals(chef.recipes.$[0].name, 'tacos');
+    assert.equals(chef.recipes.$[1].name, 'eggs');
+    assert.equals(chef.recipes.$.length, 2);
+    assert.equals(results.length, 1);
+    assert.equals(results[0], chef.recipes.$[0]);
 
   }
 
 });
-
-//var vlad = require('vladiator');
-
-// var Chef = LilModel.extend({
-
-//   defaults: {
-//     urlRoot: '/chef'
-//   },
-
-//   validate: vlad({
-//     _id: ['string'],
-//     name: ['required', 'string', ['length', 0, 30]],
-//     age: ['number', ['gte' , 1]],
-//     assistant: ['chef'],
-//     recipes: ['array']
-//   }),
-
-//   assistant: function () {
-//     return Chef.create(this.$.assistant);
-//   }
-
-// });
-
-
-// module.exports = Chef;
-
-
-// var chefGus = Chef.create({
-//   name: 'gus',
-//   age: 40
-// });
-
-// chefGus.save(function (err, gus) {
-
-// });
-
-
-// Chef.create({ _id: 'dsfa32234' }).fetch(function (err, zoe) {
-
-// });

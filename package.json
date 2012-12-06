@@ -2,13 +2,13 @@
   "author": "August Hovland <gushov@gmail.com>",
   "name": "lilmodel",
   "description": "A li'l model wrapper",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/gushov/lilmodel.git"
   },
   "engines": {
-    "node": "~0.6.18"
+    "node": ">= 0.8.x"
   },
   "dependencies": {
     "lil_": ">= 0.0.x",

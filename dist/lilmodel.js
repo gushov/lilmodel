@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.0 - 2012-11-15
+/*! lilmodel - v0.0.2 - 2012-12-06
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -135,38 +135,73 @@ module.exports = {
 
   },
 
-  extend: function (obj, src) {
+  walk: function (target, source, func, fill) {
 
-    this.eachIn(src, function (name, value) {
+    var self = this;
 
-      var type = this.typeOf(value);
+    var walkObj = function (target, source) {
 
-      switch (type) {
-        case 'object':
-          obj[name] = obj[name] || {};
-          this.extend(obj[name] || {}, value);
-          break;
-        case 'boolean':
-          obj[name] = obj[name] && value;
-          break;
-        default:
-          obj[name] = value;
-          break;
+      self.eachIn(source, function (name, obj) {
+        step(target[name], obj, name, target);
+      });
+
+    };
+
+    var step = function (target, source, name, parent) {
+
+      var type = self.typeOf(source);
+
+      if (type === 'object') {
+
+        if (!target && parent && fill) {
+          target = parent[name] = {};
+        }
+        
+        walkObj(target, source);
+
+      } else {
+        func.call(parent, target, source, name);
       }
 
-      return obj;
+    };
 
-    }, this);
+    step(target, source);
+
+  },
+
+  extend: function (obj, src) {
+
+    this.walk(obj, src, function (target, src, name) {
+      this[name] = src;
+    }, true);
+
+    return obj;
 
   },
 
   defaults: function (obj, defaults) {
 
-    this.eachIn(defaults, function (name, value) {
-      if (!obj[name]) { obj[name] = value; }
-    });
+    this.walk(obj, defaults, function (target, src, name) {
+
+      if (!target) {
+        this[name] = src;
+      }
+
+    }, true);
 
     return obj;
+
+  },
+
+  match: function (obj, test) {
+
+    var isMatch = true;
+
+    this.walk(obj, test, function (target, src) {
+      isMatch = (target === src);
+    });
+
+    return isMatch;
 
   },
 
@@ -206,6 +241,14 @@ provide('lilobj', function (require, module, exports) {
 var _ = require('lil_');
 
 module.exports = {
+
+  isA: function (prototype) {
+
+    function D() {}
+    D.prototype = prototype;
+    return this instanceof D;
+
+  },
 
   extend: function (props) {
 
@@ -270,8 +313,8 @@ var validator = {
 
   },
 
-  gte: function (name, value, min) {
-    return value < min;
+  gte: function (value, min) {
+    return value >= min;
   }
 
 };
@@ -356,7 +399,35 @@ module.exports = LilObj.extend({
 
   },
 
-  find: function (next) {
+  add: function (obj) {
+
+    var model;
+    if (obj.isA && obj.isA(this.model)) {
+      model = obj;
+    } else {
+      model = this.model.create(obj);
+    }
+
+    this.$.push(model);
+  },
+
+  remove: function (query) {
+
+    this.$ = this.$.filter(function (model) {
+      return !_.match(model, query);
+    });
+
+  },
+
+  get: function (query) {
+
+    return this.$.filter(function (model) {
+      return _.match(model, query);
+    });
+
+  },
+
+  find: function (query, next) {
     var sync = syncr();
     sync('find', this, next);
   }

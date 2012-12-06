@@ -84,7 +84,13 @@ dunkel.save(function (err) {
 
 ### _collection_.validate()
 
-### _collection_.find(callback)
+### _collection_.add(model)
+
+### _collection_.remove(query)
+
+### _collection_.get(query)
+
+### _collection_.find(query, callback)
 
 ## License
 Copyright (c) 2012 August Hovland
