@@ -69,9 +69,12 @@ buster.testCase("lilmodel", {
     var results = chef.recipes.get({ name: 'tacos' });
     chef.recipes.remove({ name: 'meatball sauce' });
 
-    chef.save(nextSpy);
+
+    var context = { me: 'gus' };
+    chef.save(nextSpy, context);
     assert.calledOnce(this.syncStub);
     assert.calledOnce(nextSpy);
+    assert(nextSpy.calledOn(context));
     assert.equals(chef.name, 'gus');
     assert.equals(chef.sousChef.name, 'zoe');
     assert.equals(chef.recipes.$[0].name, 'tacos');

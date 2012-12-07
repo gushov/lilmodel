@@ -72,11 +72,11 @@ dunkel.save(function (err) {
 
 ### _model_.validate()
 
-### _model_.save(callback)
+### _model_.save(callback, context)
 
-### _model_.fetch(callback)
+### _model_.fetch(callback, context)
 
-### _model_.destroy(callback)
+### _model_.destroy(callback, context)
 
 ### collection.extend(config)
 
@@ -90,7 +90,9 @@ dunkel.save(function (err) {
 
 ### _collection_.get(query)
 
-### _collection_.find(query, callback)
+### _collection_.each(callback, context)
+
+### _collection_.find(callback, context)
 
 ## License
 Copyright (c) 2012 August Hovland

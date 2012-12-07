@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.2 - 2012-12-06
+/*! lilmodel - v0.0.3 - 2012-12-07
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -305,6 +305,10 @@ var validator = {
     return typeof value === 'string';
   },
 
+  boolean: function (value) {
+    return typeof value === 'boolean';
+  },
+
   length: function (value, min, max) {
 
     var isBigEnough = !min || value.length >= min;
@@ -427,9 +431,15 @@ module.exports = LilObj.extend({
 
   },
 
-  find: function (query, next) {
+  each: function (next, ctx) {
+    _.each(this.$, next, ctx);
+  },
+
+  find: function (next, ctx) {
+
     var sync = syncr();
-    sync('find', this, next);
+    sync('find', this, next.bind(ctx));
+
   }
 
 });
@@ -518,28 +528,28 @@ module.exports = LilObj.extend({
 
   },
 
-  save: function (next) {
+  save: function (next, ctx) {
 
     var sync = syncr();
     var method = this.$._id ? 'update' : 'create';
     var validation = this.validate();
 
     if (validation.isValid) {
-      sync(method, this, next);
+      sync(method, this, next.bind(ctx));
     } else {
-      next(validation.error, this);
+      next.call(ctx, validation.error, this);
     }
 
   },
 
-  fetch: function (next) {
+  fetch: function (next, ctx) {
     var sync = syncr();
-    sync('fetch', this, next);
+    sync('fetch', this, next.bind(ctx));
   },
 
-  destroy: function (next) {
+  destroy: function (next, ctx) {
     var sync = syncr();
-    sync('delete', this, next);
+    sync('delete', this, next.bind(ctx));
   }
 
 });
