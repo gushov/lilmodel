@@ -2,7 +2,7 @@
   "author": "August Hovland <gushov@gmail.com>",
   "name": "lilmodel",
   "description": "A li'l model wrapper",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/gushov/lilmodel.git"

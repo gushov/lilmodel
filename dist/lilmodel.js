@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.3 - 2012-12-07
+/*! lilmodel - v0.0.5 - 2012-12-07
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -549,7 +549,7 @@ module.exports = LilObj.extend({
 
   destroy: function (next, ctx) {
     var sync = syncr();
-    sync('delete', this, next.bind(ctx));
+    sync('destroy', this, next.bind(ctx));
   }
 
 });
