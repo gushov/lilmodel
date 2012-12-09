@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.5 - 2012-12-07
+/*! lilmodel - v0.0.5 - 2012-12-09
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -232,7 +232,25 @@ module.exports = {
 
 }, true);
 
-provide('lilobj', function (require, module, exports) {
+provide('lilobj/arr', function (require, module, exports) {
+
+/*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
+  newcap:true, noarg:true, sub:true, undef:true, boss:true,
+  strict:false, eqnull:true, browser:true, node:true */
+
+var obj = require('./obj');
+var _ = require('lil_');
+
+var arr = Object.create(Array.prototype);
+_.eachIn(obj, function (name, value) {
+  arr[name] = value;
+});
+
+module.exports = arr; 
+
+
+}, true);
+provide('lilobj/obj', function (require, module, exports) {
 
 /*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
@@ -274,6 +292,22 @@ module.exports = {
 
   }
 
+};
+
+
+}, true);
+provide('lilobj', function (require, module, exports) {
+
+/*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
+  newcap:true, noarg:true, sub:true, undef:true, boss:true,
+  strict:false, eqnull:true, browser:true, node:true */
+
+var obj = require('./lilobj/obj');
+var arr = require('./lilobj/arr');
+
+module.exports = {
+  obj: obj,
+  arr: arr
 };
 
 
@@ -369,18 +403,16 @@ provide('lilmodel/collection', function (require, module, exports) {
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
   strict:false, eqnull:true, browser:true, node:true */
 
-var LilObj = require('lilobj');
+var arr = require('lilobj').arr;
 var _ = require('lil_');
 var syncr = require('./syncr');
 
-module.exports = LilObj.extend({
+module.exports = arr.extend({
 
   construct: function (values) {
 
-    this.$ = [];
-
     _.each(values, function (value) {
-      this.$.push(this.model.create(value));
+      this.push(this.model.create(value));
     }, this);
 
     this.validate();
@@ -391,9 +423,9 @@ module.exports = LilObj.extend({
 
     var validation = { isValid: true, error: [] };
 
-    _.each(this.$, function ($) {
+    _.each(this, function (model) {
       
-      var v = $.validate();
+      var v = model.validate();
       validation.error.push(v.error);
       validation.isValid = validation.isValid && v.isValid;
 
@@ -412,27 +444,37 @@ module.exports = LilObj.extend({
       model = this.model.create(obj);
     }
 
-    this.$.push(model);
+    this.push(model);
   },
 
   remove: function (query) {
 
-    this.$ = this.$.filter(function (model) {
-      return !_.match(model, query);
+    var index;
+
+    _.each(this, function (model, i) {
+
+      if (_.match(model, query)) {
+        index = i;
+      }
+
     });
+
+    if (typeof index === 'number') {
+      this.splice(index, 1);
+    }
 
   },
 
   get: function (query) {
 
-    return this.$.filter(function (model) {
+    return this.filter(function (model) {
       return _.match(model, query);
     });
 
   },
 
   each: function (next, ctx) {
-    _.each(this.$, next, ctx);
+    _.each(this, next, ctx);
   },
 
   find: function (next, ctx) {
@@ -452,12 +494,38 @@ provide('lilmodel/model', function (require, module, exports) {
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
   strict:false, eqnull:true, browser:true, node:true */
 
-var LilObj = require('lilobj');
+var obj = require('lilobj').obj;
 var _ = require('lil_');
 var vlad = require('vladiator');
 var syncr = require('./syncr');
 
-module.exports = LilObj.extend({
+function getter(name) {
+  return this.$[name];
+}
+
+function setter(name, value)   {
+
+  var model = this.children && this.children[name];
+
+  if (model && model.create && typeof value === 'object') {
+    this.$[name] = model.create(value);
+  } else if (model && typeof value === 'object') {
+    this.$[name] = this.create(value);
+  } else if (!model) {
+    this.$[name] = value;
+  }
+
+}
+
+function parser(ctx, model, next) {
+
+  return function (err, values) {
+    next.call(ctx, err, model.create(values || {}));
+  };
+
+}
+
+module.exports = obj.extend({
 
   construct: function (values) {
 
@@ -465,27 +533,9 @@ module.exports = LilObj.extend({
     var props = _.mapIn(this.rules, function (name, value) {
 
       return {
-
-        enumerable : true,
-
-        get: function () {
-          return this.$[name];
-        },
-
-        set: function (value) {
-
-          var model = this.children && this.children[name];
-
-          if (model && model.create && typeof value === 'object') {
-            this.$[name] = model.create(value);
-          } else if (model && typeof value === 'object') {
-            this.$[name] = this.create(value);
-          } else if (!model) {
-            this.$[name] = value;
-          }
-
-        }
-
+        enumerable: true,
+        get: getter.bind(this, name),
+        set: setter.bind(this, name)
       };
 
     }, this);
@@ -535,7 +585,7 @@ module.exports = LilObj.extend({
     var validation = this.validate();
 
     if (validation.isValid) {
-      sync(method, this, next.bind(ctx));
+      sync(method, this, parser(ctx, this, next));
     } else {
       next.call(ctx, validation.error, this);
     }
@@ -544,12 +594,12 @@ module.exports = LilObj.extend({
 
   fetch: function (next, ctx) {
     var sync = syncr();
-    sync('fetch', this, next.bind(ctx));
+    sync('fetch', this, parser(ctx, this, next));
   },
 
   destroy: function (next, ctx) {
     var sync = syncr();
-    sync('destroy', this, next.bind(ctx));
+    sync('destroy', this, parser(ctx, this, next));
   }
 
 });

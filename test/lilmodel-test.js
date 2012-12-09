@@ -8,23 +8,16 @@ var lilModel = typeof module !== 'undefined' ? require('../lib/lilmodel') : requ
 
 buster.testCase("lilmodel", {
 
-  "setUp": function () {
-    this.syncStub = this.stub().callsArg(2);
-    lilModel.syncr(this.syncStub);
-  },
-
   "should call sync on save when valid": function () {
 
+    var syncStub = this.stub().callsArg(2);
     var nextSpy = this.spy();
+
+    lilModel.syncr(syncStub);
 
     var Recipe = lilModel.model.extend({
 
-      defaults: {
-        urlRoot: '/recipe'
-      },
-
       rules: {
-        urlRoot: ['required', 'string'],
         name: ['required', 'string']
       }
       
@@ -37,11 +30,11 @@ buster.testCase("lilmodel", {
     var Chef = lilModel.model.extend({
 
       defaults: {
-        urlRoot: '/chef'
+        style: 'classic'
       },
 
       rules: {
-        urlRoot: ['required', 'string'],
+        style: ['required', 'string'],
         name: ['required', 'string'],
         recipes: ['array'],
         sousChef: ['object']
@@ -69,19 +62,26 @@ buster.testCase("lilmodel", {
     var results = chef.recipes.get({ name: 'tacos' });
     chef.recipes.remove({ name: 'meatball sauce' });
 
+    assert.equals(chef.name, 'gus');
+    assert.equals(chef.sousChef.name, 'zoe');
+
+    chef.name = 'august';
+    chef.sousChef = { name: 'zozo' };
 
     var context = { me: 'gus' };
     chef.save(nextSpy, context);
-    assert.calledOnce(this.syncStub);
+    assert(syncStub.calledOnce);
+    // assert.calledOnce(syncStub); //fails in phantomjs
     assert.calledOnce(nextSpy);
     assert(nextSpy.calledOn(context));
-    assert.equals(chef.name, 'gus');
-    assert.equals(chef.sousChef.name, 'zoe');
-    assert.equals(chef.recipes.$[0].name, 'tacos');
-    assert.equals(chef.recipes.$[1].name, 'eggs');
-    assert.equals(chef.recipes.$.length, 2);
+    assert.equals(chef.name, 'august');
+    assert.equals(chef.sousChef.name, 'zozo');
+    assert.equals(chef.sousChef.style, 'classic');
+    assert.equals(chef.recipes[0].name, 'tacos');
+    assert.equals(chef.recipes[1].name, 'eggs');
+    assert.equals(chef.recipes.length, 2);
     assert.equals(results.length, 1);
-    assert.equals(results[0], chef.recipes.$[0]);
+    assert.equals(results[0], chef.recipes[0]);
 
   }
 
