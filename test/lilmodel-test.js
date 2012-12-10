@@ -83,6 +83,36 @@ buster.testCase("lilmodel", {
     assert.equals(results.length, 1);
     assert.equals(results[0], chef.recipes[0]);
 
+  },
+
+  "should call sync on collection find": function () {
+
+    var syncStub = this.stub().callsArg(2);
+    var nextSpy = this.spy();
+
+    lilModel.syncr(syncStub);
+
+    var Recipe = lilModel.model.extend({
+      rules: {
+        name: ['required', 'string']
+      }
+    });
+
+    var Recipes = lilModel.collection.extend({
+      model: Recipe
+    });
+
+    var recipes = Recipes.create();
+    var context = { me: 'gus' };
+    var query = { name: 'gus' };
+    recipes.find(query, nextSpy, context);
+
+    assert(syncStub.calledOnce);
+    assert(syncStub.calledWith('find', recipes));
+    assert.equals(syncStub.getCall(0).args[1].query, query);
+    assert(nextSpy.calledOnce);
+    assert(nextSpy.calledOn(context));
+
   }
 
 });

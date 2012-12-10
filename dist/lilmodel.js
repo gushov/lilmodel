@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.5 - 2012-12-09
+/*! lilmodel - v0.0.6 - 2012-12-10
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -407,6 +407,17 @@ var arr = require('lilobj').arr;
 var _ = require('lil_');
 var syncr = require('./syncr');
 
+function parser(ctx, model, next) {
+
+  return function (err, values) {
+
+    var instance = !err && model.create(values);
+    next.call(ctx, err, instance);
+
+  };
+
+}
+
 module.exports = arr.extend({
 
   construct: function (values) {
@@ -473,14 +484,11 @@ module.exports = arr.extend({
 
   },
 
-  each: function (next, ctx) {
-    _.each(this, next, ctx);
-  },
-
-  find: function (next, ctx) {
+  find: function (query, next, ctx) {
 
     var sync = syncr();
-    sync('find', this, next.bind(ctx));
+    this.query = query;
+    sync('find', this, parser(ctx, this, next));
 
   }
 
@@ -520,7 +528,10 @@ function setter(name, value)   {
 function parser(ctx, model, next) {
 
   return function (err, values) {
-    next.call(ctx, err, model.create(values || {}));
+
+    var instance = !err ? model.create(values) : null;
+    next.call(ctx, err, instance);
+
   };
 
 }
@@ -593,13 +604,17 @@ module.exports = obj.extend({
   },
 
   fetch: function (next, ctx) {
+
     var sync = syncr();
     sync('fetch', this, parser(ctx, this, next));
+
   },
 
   destroy: function (next, ctx) {
+
     var sync = syncr();
     sync('destroy', this, parser(ctx, this, next));
+    
   }
 
 });
