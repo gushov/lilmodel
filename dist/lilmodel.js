@@ -1,5 +1,5 @@
-/*! lilmodel - v0.0.6 - 2012-12-10
- * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
+/*! lilmodel - v0.0.7 - 2013-01-18
+ * Copyright (c) 2013 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
 
@@ -87,49 +87,68 @@ module.exports = {
 
   },
 
-  each: function (arr, func, ctx) {
+  each: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      arr.forEach(func, ctx);
+    var type = this.typeOf(thing);
+    var keys;
+
+    if (type === 'array' && thing.length) {
+
+      thing.forEach(func, ctx);
+
+    } else if (type === 'object') {
+
+      keys = thing ? Object.keys(thing) : [];
+
+      keys.forEach(function (name, i) {
+        func.call(ctx, name, thing[name], i);
+      });
+
     }
 
   },
 
-  every: function (arr, func, ctx) {
+  every: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      return arr.every(func, ctx);
+    var type = this.typeOf(thing);
+    var keys;
+
+    if (type === 'array' && thing.length) {
+
+      return thing.every(func, ctx);
+
+    } else if (type === 'object') {
+
+      keys = thing ? Object.keys(thing) : [];
+
+      return keys.every(function (name, i) {
+        return func.call(ctx, name, thing[name], i);
+      });
+
     }
+
     return false;
 
   },
 
-  map: function (arr, func, ctx) {
+  map: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      return arr.map(func, ctx);
+    var type = this.typeOf(thing);
+    var result = [];
+
+    if (type === 'array' && thing.length) {
+
+      return thing.map(func, ctx);
+
+    } else if (type === 'object') {
+
+      result = {};
+
+      this.each(thing, function (name, obj, i) {
+        result[name] = func.call(this, name, obj, i);
+      }, ctx);
+
     }
-    return [];
-
-  },
-
-  eachIn: function (obj, func, ctx) {
-
-    var keys = obj ? Object.keys(obj) : [];
-
-    keys.forEach(function (name, i) {
-      func.call(ctx, name, obj[name], i);
-    });
-
-  },
-
-  mapIn: function (obj, func, ctx) {
-
-    var result = {};
-
-    this.eachIn(obj, function (name, obj, i) {
-      result[name] = func.call(this, name, obj, i);
-    }, ctx);
 
     return result;
 
@@ -141,7 +160,7 @@ module.exports = {
 
     var walkObj = function (target, source) {
 
-      self.eachIn(source, function (name, obj) {
+      self.each(source, function (name, obj) {
         step(target[name], obj, name, target);
       });
 
@@ -216,16 +235,6 @@ module.exports = {
 
     return picked;
 
-  },
-
-  pushOn: function (obj, prop, value) {
-
-    if (obj[prop] && typeof obj[prop].push === 'function') {
-      obj[prop].push(value);
-    } else if ( typeof obj[prop] === 'undefined' ) {
-      obj[prop] = [value];
-    }
-
   }
 
 };
@@ -236,17 +245,56 @@ provide('lilobj/arr', function (require, module, exports) {
 
 /*jshint curly:true, eqeqeq:true, immed:true, latedef:true,
   newcap:true, noarg:true, sub:true, undef:true, boss:true,
-  strict:false, eqnull:true, browser:true, node:true */
+  strict:false, eqnull:true, browser:true, node:true,
+  proto:true */
 
-var obj = require('./obj');
 var _ = require('lil_');
 
-var arr = Object.create(Array.prototype);
-_.eachIn(obj, function (name, value) {
-  arr[name] = value;
-});
+function Arr() {
 
-module.exports = arr; 
+  var arr = [];
+  arr.push.apply(arr, arguments);
+  arr.__proto__ = Arr.prototype;
+
+  return arr;
+
+}
+
+Arr.prototype = [];
+
+Arr.prototype.isA = function (prototype) {
+
+  function D() {}
+  D.prototype = prototype;
+  return this instanceof D;
+
+};
+
+Arr.prototype.extend = function (props) {
+
+    Arr.prototype = this;
+    var child = new Arr();
+
+    _.each(props, function (name) {
+      child[name] = props[name];
+    });
+
+    return child;
+};
+
+Arr.prototype.create = function () {
+
+    Arr.prototype = this;
+    var child = new Arr();
+
+    if (child.construct !== undefined) {
+      child.construct.apply(child, arguments);
+    }
+
+    return child;
+};
+
+module.exports = new Arr();
 
 
 }, true);
@@ -272,7 +320,7 @@ module.exports = {
 
     var result = Object.create(this);
 
-    _.eachIn(props, function (name, value) {
+    _.each(props, function (name, value) {
       result[name] = value;
     });
 
@@ -541,7 +589,7 @@ module.exports = obj.extend({
   construct: function (values) {
 
     this.$ = {};
-    var props = _.mapIn(this.rules, function (name, value) {
+    var props = _.map(this.rules, function (name, value) {
 
       return {
         enumerable: true,
@@ -556,7 +604,7 @@ module.exports = obj.extend({
     values = _.pick(values, this.rules);
     _.defaults(values, this.defaults);
 
-    _.eachIn(values, function (name, value) {
+    _.each(values, function (name, value) {
       this[name] = value;
     }, this);
 
@@ -568,7 +616,7 @@ module.exports = obj.extend({
 
     var validation = { isValid: true, error: {} };
 
-    _.eachIn(this.rules, function (prop, rules) {
+    _.each(this.rules, function (prop, rules) {
 
       var value = this[prop];
       var v;
