@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.8 - 2013-01-24
+/*! lilmodel - v0.0.9 - 2013-01-25
  * Copyright (c) 2013 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -436,6 +436,10 @@ var validator = {
 
   boolean: function (value) {
     return typeof value === 'boolean';
+  },
+
+  object: function (value) {
+    return typeof value === 'object';
   },
 
   length: function (value, min, max) {
