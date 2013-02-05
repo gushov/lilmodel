@@ -78,6 +78,8 @@ dunkel.save(function (err) {
 
 ### _model_.destroy(callback, context)
 
+### _model_.serialize()
+
 ### collection.extend(config)
 
 ### collection.create(propertiesList)
@@ -91,6 +93,8 @@ dunkel.save(function (err) {
 ### _collection_.get(query)
 
 ### _collection_.find(query, callback, context)
+
+### _collection_.serialize()
 
 ## License
 Copyright (c) 2012 August Hovland

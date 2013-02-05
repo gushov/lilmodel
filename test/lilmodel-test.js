@@ -62,8 +62,21 @@ buster.testCase("lilmodel", {
     var results = chef.recipes.get({ name: 'tacos' });
     chef.recipes.remove({ name: 'meatball sauce' });
 
+    var serialized = chef.serialize();
     assert.equals(chef.name, 'gus');
     assert.equals(chef.sousChef.name, 'zoe');
+    assert.equals(serialized, {
+      name: 'gus',
+      style: 'classic',
+      sousChef: {
+        name: 'zoe',
+        style: 'classic'
+      },
+      recipes: [
+        { name: 'tacos' },
+        { name: 'eggs' }
+      ]
+    });
 
     chef.name = 'august';
     chef.sousChef = { name: 'zozo' };

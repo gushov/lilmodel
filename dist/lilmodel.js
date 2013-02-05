@@ -1,4 +1,4 @@
-/*! lilmodel - v0.0.9 - 2013-01-25
+/*! lilmodel - v0.0.10 - 2013-02-05
  * Copyright (c) 2013 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -589,6 +589,14 @@ module.exports = arr.extend({
     this.query = query;
     sync('find', this, parser(ctx, this, next));
 
+  },
+
+  serialize: function () {
+
+    return _.map(this, function (elem) {
+      return elem.serialize();
+    });
+
   }
 
 });
@@ -714,6 +722,20 @@ module.exports = obj.extend({
     var sync = syncr();
     sync('destroy', this, parser(ctx, this, next));
     
+  },
+
+  serialize: function () {
+
+    return _.map(this.$, function (name, value) {
+
+      if (this.children && this.children[name]) {
+        return value.serialize();
+      } else {
+        return value;
+      }
+
+    }, this);
+
   }
 
 });
